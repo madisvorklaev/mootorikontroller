@@ -30,7 +30,6 @@ void loop() {
     readPins();
   }
     digitalWrite(goLed, LOW);
-    //Serial.println("GO incative");
     
   if(contactorEngaged == LOW && goPressed == HIGH){
     delay(100);
@@ -63,17 +62,14 @@ void blink() {
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis >= interval) {
-    // save the last time you blinked the LED
     previousMillis = currentMillis;
 
-    // if the LED is off turn it on and vice-versa:
     if (goLedState == LOW) {
       goLedState = HIGH;
     } else {
       goLedState = LOW;
     }
 
-    // set the LED with the ledState of the variable:
     digitalWrite(goLed, goLedState);
   }
 }
