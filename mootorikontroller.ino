@@ -1,12 +1,14 @@
 #define DEBUG 1
 
-const int goRelayPin = 3;
-const int contactorPin = 4;
-const int goPressedPin = 5;
+#include <LiquidCrystal.h>
+
+const int goRelayPin = 6;
+const int contactorPin = 7;
+const int goPressedPin = 8;
 const int redLed = 9;
 const int greenLed = 10;
-const int blueLed = 11;
-const int contactorLed = 12;
+const int blueLed = 13;
+//const int contactorLed = 12;
 
 int goEngaged;
 int goPressed;
@@ -21,6 +23,8 @@ bool blinked;
 
 String message;
 
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
 void setup() {
   pinMode(goRelayPin, INPUT);
   pinMode(contactorPin, INPUT);
@@ -28,11 +32,14 @@ void setup() {
   pinMode(redLed, OUTPUT);
   pinMode(greenLed, OUTPUT);
   pinMode(blueLed, OUTPUT);
-  pinMode(contactorLed, OUTPUT);
+//  pinMode(contactorLed, OUTPUT);
 
   #ifdef DEBUG
   Serial.begin(9600);
   #endif
+
+  lcd.begin(16, 2);
+  lcd.print("HOIST CONTROLLER");
 }
 
 void loop() {
@@ -41,6 +48,7 @@ void loop() {
   while(contactorEngaged == LOW && goEngaged == LOW){
     if(goPressed == HIGH){
       ledColor = greenLed;
+      lcd.clear();
       message = "GO active";
       print();
     }
@@ -60,18 +68,19 @@ void loop() {
       print();
     contactorEngaged = digitalRead(contactorPin);
     if(contactorEngaged == LOW){
-      digitalWrite(contactorLed, HIGH);
+      digitalWrite(redLed, HIGH);
       message = "HALT";
       print();
     }
     else{
+      lcd.clear();
       message = "GO inactive";
       print();
       ledState = LOW;
       digitalWrite(redLed, ledState);
       digitalWrite(greenLed, ledState);
       digitalWrite(blueLed, ledState);
-      digitalWrite(contactorLed, ledState);
+//      digitalWrite(contactorLed, ledState);
     }
   }
   
@@ -106,6 +115,8 @@ void blink() {
 }
 
 void print() {
+  lcd.setCursor(0, 1);
+  lcd.print(message);
   #ifdef DEBUG
   Serial.println(message);
   #endif
