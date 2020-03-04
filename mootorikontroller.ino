@@ -1,3 +1,5 @@
+#define DEBUG 1
+
 const int goRelayPin = 3;
 const int contactorPin = 4;
 const int goPressedPin = 5;
@@ -17,6 +19,8 @@ const long interval = 500;
 
 bool blinked;
 
+String message;
+
 void setup() {
   pinMode(goRelayPin, INPUT);
   pinMode(contactorPin, INPUT);
@@ -26,7 +30,9 @@ void setup() {
   pinMode(blueLed, OUTPUT);
   pinMode(contactorLed, OUTPUT);
 
+  #ifdef DEBUG
   Serial.begin(9600);
+  #endif
 }
 
 void loop() {
@@ -35,11 +41,13 @@ void loop() {
   while(contactorEngaged == LOW && goEngaged == LOW){
     if(goPressed == HIGH){
       ledColor = greenLed;
-      Serial.println("GO active");
+      message = "GO active";
+      print();
     }
     else if(goPressed == LOW){
       ledColor = blueLed;
-      Serial.println("LINK active");
+      message = "LINK active";
+      print();
     }
     blink();
     readPins();
@@ -48,14 +56,17 @@ void loop() {
     
   if(contactorEngaged == LOW && goEngaged == HIGH){
     delay(100);
-    Serial.println("Delay");
+    message = "Delay";
+      print();
     contactorEngaged = digitalRead(contactorPin);
     if(contactorEngaged == LOW){
       digitalWrite(contactorLed, HIGH);
-      Serial.println("HALT");
+      message = "HALT";
+      print();
     }
     else{
-      Serial.println("GO incative");
+      message = "GO inactive";
+      print();
       ledState = LOW;
       digitalWrite(redLed, ledState);
       digitalWrite(greenLed, ledState);
@@ -92,4 +103,10 @@ void blink() {
 
     digitalWrite(ledColor, ledState);
   }
+}
+
+void print() {
+  #ifdef DEBUG
+  Serial.println(message);
+  #endif
 }
